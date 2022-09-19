@@ -63,6 +63,11 @@
   background-color: lightgoldenrodyellow;
   box-shadow: none;
 }
+#pokemonAnalyzer #toolBox #redo-undoBox img.disabled {
+  box-shadow: none;
+  background-color: gray;
+  cursor: not-allowed;
+}
 #pokemonAnalyzer #toolBox #boldBox {
   grid-column-start: 1;
   grid-column-end: 3;
@@ -79,13 +84,12 @@
   width: 20%;
   max-width: 50px;
   aspect-ratio: 1/1;
-  border: 1px black solid;
-  background-color: lightgoldenrodyellow;
+  background-color: black;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 #pokemonAnalyzer #toolBox #boldBox #boldSampleBox #boldSample {
   border-radius: 50%;
-  background-color: black;
+  background-color: white;
 }

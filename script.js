@@ -11,13 +11,15 @@ const env = {
 };
 
 
-(() => {
+const defaultBold = 10;
+const defaultColor = (() => {
 	const [onBlack, onWhite] = mkElm(["div", "div"]);
 	onBlack.style.backgroundColor = "black";
 	onWhite.style.backgroundColor = "white";
 	const elms = [onBlack, onWhite];
 	looper(elms, elm => elm.addEventListener("click", setColor));
 	append(elms, colorBoxes);
+	return onBlack;
 })();
 looper(fromAtoB(0, 340, 15, false), (i, _) => {
 	const [colorElm] = mkElm(["div"]);
@@ -81,11 +83,15 @@ function drawPoint(x, y) {
 	ctx.fill();
 }
 
-boldChanger.addEventListener("input", function() {
+
+function boldChanged() {
+	console.log(1);
 	boldSample.style.width = `${this.value}px`;
 	boldSample.style.height = `${this.value}px`;
 	env.bold = this.value;
-});
+}
+boldChanger.addEventListener("change", boldChanged);
+boldChanger.addEventListener("input", boldChanged);
 
 eraseAll.addEventListener("click", function() {
 	if (!window.confirm("削除しますか???")) return;
@@ -93,5 +99,12 @@ eraseAll.addEventListener("click", function() {
 	ctx.fillStyle = "white";
 	ctx.fill();
 });
+
+
+(() => { // init
+	defaultColor.click();
+	boldChanger.value = defaultBold;
+	boldChanger.dispatchEvent(new Event("input"));
+})();
 
 

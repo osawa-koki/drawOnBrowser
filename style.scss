@@ -61,6 +61,11 @@
 					background-color: lightgoldenrodyellow;
 					box-shadow: none;
 				}
+				&.disabled {
+					box-shadow: none;
+					background-color: gray;
+					cursor: not-allowed;
+				}
 			}
 		}
 		#boldBox {
@@ -78,14 +83,13 @@
 				width: 20%;
 				max-width: 50px;
 				aspect-ratio: 1 / 1;
-				border: 1px black solid;
-				background-color: lightgoldenrodyellow;
+				background-color: black;
 				display: flex;
 				justify-content: center;
 				align-items: center;
 				#boldSample {
 					border-radius: 50%;
-					background-color: black;
+					background-color: white;
 				}
 			}
 		}
