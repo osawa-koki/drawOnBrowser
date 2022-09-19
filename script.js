@@ -3,6 +3,12 @@
 const [canvas, colorBoxes, redo, undo, eraseAll, boldChanger, boldSample] = getElm(["canvas", "colorBoxes", "redo", "undo", "eraseAll", "boldChanger", "boldSample"]);
 const ctx = canvas.getContext("2d");
 
+
+const log = {
+	currentPosition: 0,
+	images: [],
+};
+
 const env = {
 	color: "red",
 	bold: 5,
@@ -11,6 +17,8 @@ const env = {
 };
 
 
+// 既定の色と太さです。
+// 同時にHSLのHループでは到達できない黒と白も作っちゃいます。
 const defaultBold = 10;
 const defaultColor = (() => {
 	const [onBlack, onWhite] = mkElm(["div", "div"]);
@@ -21,6 +29,8 @@ const defaultColor = (() => {
 	append(elms, colorBoxes);
 	return onBlack;
 })();
+
+// HSL色空間のHを変化させた選択用オブジェクトを作成します。
 looper(fromAtoB(0, 340, 15, false), (i, _) => {
 	const [colorElm] = mkElm(["div"]);
 	colorElm.style.backgroundColor = `hsla(${i}, 100%, 50%, 1)`;
@@ -28,22 +38,31 @@ looper(fromAtoB(0, 340, 15, false), (i, _) => {
 	colorBoxes.appendChild(colorElm);
 });
 
+
+// 色ボタンがクリックされた際の処理を記述します。
 function setColor() {
 	removeClassifiedItems("selected");
 	this.classList.add("selected");
 	env.color = this.style.backgroundColor;
 }
 
-
+// なぞり終わった際の処理です。
 function moveStart() {
 	env.isClicking = true;
 	ctx.fillStyle = env.color;
 }
+
+// なぞり動作が完了した際の処理です。
 function moveEnd() {
-	env.isClicking = false;
+	if (!env.isClicking) return;
+	log.images.splice(log.currentPosition);
 	drawLine();
+	env.isClicking = false;
 }
 
+
+// なぞり終わった時にパスを描写します。
+// なぞった点の描写だけでは見た目がアレなので、、、笑
 function drawLine() {
 	ctx.beginPath();
 	ctx.lineWidth = env.bold;
@@ -53,6 +72,11 @@ function drawLine() {
 	});
 	env.pointsTracer.splice(0);
 	ctx.stroke();
+	canvas.toBlob(blob => {
+		log.images.push(blob);
+		log.currentPosition++;
+		undo.classList.remove("disabled");
+	});
 }
 
 canvas.addEventListener("mousedown", moveStart);
@@ -76,7 +100,7 @@ canvas.addEventListener("mousemove", function(event) {
     drawPoint(x, y);
 });
 
-
+// なぞられた部分に点を描写します。
 function drawPoint(x, y) {
 	ctx.beginPath();
 	ctx.arc(x, y, env.bold / 2, 0, 2 * Math.PI, false);
@@ -84,23 +108,51 @@ function drawPoint(x, y) {
 }
 
 
+// ペンの太さをctxオブジェクトに反映させます。
 function boldChanged() {
-	console.log(1);
 	boldSample.style.width = `${this.value}px`;
 	boldSample.style.height = `${this.value}px`;
 	env.bold = this.value;
 }
+
 boldChanger.addEventListener("change", boldChanged);
 boldChanger.addEventListener("input", boldChanged);
 
 eraseAll.addEventListener("click", function() {
 	if (!window.confirm("削除しますか???")) return;
+	log.currentPosition = 0;
+	log.images.splice(0);
+	eraser();
+});
+
+// canvasを初期状態に戻します。
+function eraser() {
 	ctx.rect(0, 0, canvas.width, canvas.height);
 	ctx.fillStyle = "white";
 	ctx.fill();
+}
+
+undo.addEventListener("click", function() {
+	if (log.images.length < 1) {
+		undo.classList.add("disabled");
+		return;
+	}
+	if (this.classList.contains("disabled")) return;
+	eraser();
+	log.currentPosition--;
+	const prevBlob = log.images[log.currentPosition - 1];
+	blobOnCanvas(prevBlob);
 });
 
 
+// blobオブジェクトをcanvasに反映させます。
+async function blobOnCanvas(blob) {
+	if (blob === undefined) return;
+	const bitmap = await createImageBitmap(blob);
+	ctx.drawImage(bitmap, 0, 0);
+}
+
+// 初期作業を行います。
 (() => { // init
 	defaultColor.click();
 	boldChanger.value = defaultBold;

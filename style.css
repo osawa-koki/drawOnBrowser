@@ -76,9 +76,15 @@
   display: flex;
   justify-content: space-around;
 }
+#pokemonAnalyzer #toolBox #boldBox #boldText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
+}
 #pokemonAnalyzer #toolBox #boldBox #boldChanger {
   display: block;
-  width: 80%;
+  width: 60%;
 }
 #pokemonAnalyzer #toolBox #boldBox #boldSampleBox {
   width: 20%;
