@@ -7,6 +7,7 @@ const env = {
 	color: "red",
 	bold: 5,
 	isClicking: false,
+	pointsTracer: [],
 };
 
 
@@ -28,15 +29,28 @@ looper(fromAtoB(0, 340, 15, false), (i, _) => {
 function setColor() {
 	removeClassifiedItems("selected");
 	this.classList.add("selected");
-	ctx.fillStyle = this.style.backgroundColor;
+	env.color = this.style.backgroundColor;
 }
 
 
 function moveStart() {
 	env.isClicking = true;
+	ctx.fillStyle = env.color;
 }
 function moveEnd() {
 	env.isClicking = false;
+	drawLine();
+}
+
+function drawLine() {
+	ctx.beginPath();
+	ctx.lineWidth = env.bold;
+	ctx.strokeStyle = env.color;
+	looper(env.pointsTracer, (points, _) => {
+		ctx.lineTo(points[0], points[1]);
+	});
+	env.pointsTracer.splice(0);
+	ctx.stroke();
 }
 
 canvas.addEventListener("mousedown", moveStart);
@@ -55,13 +69,15 @@ canvas.addEventListener("mousemove", function(event) {
 
 	const x = clickX - positionX;
 	const y = clickY - positionY;
-	draw(x, y);
+
+	env.pointsTracer.push([x, y]);
+    drawPoint(x, y);
 });
 
 
-function draw(x, y) {
+function drawPoint(x, y) {
 	ctx.beginPath();
-	ctx.arc(x, y, env.bold, 0, 2 * Math.PI, false);
+	ctx.arc(x, y, env.bold / 2, 0, 2 * Math.PI, false);
 	ctx.fill();
 }
 
