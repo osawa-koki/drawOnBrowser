@@ -1,6 +1,6 @@
 "use strict";
 
-const [canvas, colorBoxes, redo, undo] = getElm(["canvas", "colorBoxes", "redo", "undo"]);
+const [canvas, colorBoxes, redo, undo, eraseAll, boldChanger, boldSample] = getElm(["canvas", "colorBoxes", "redo", "undo", "eraseAll", "boldChanger", "boldSample"]);
 const ctx = canvas.getContext("2d");
 
 const env = {
@@ -80,4 +80,18 @@ function drawPoint(x, y) {
 	ctx.arc(x, y, env.bold / 2, 0, 2 * Math.PI, false);
 	ctx.fill();
 }
+
+boldChanger.addEventListener("input", function() {
+	boldSample.style.width = `${this.value}px`;
+	boldSample.style.height = `${this.value}px`;
+	env.bold = this.value;
+});
+
+eraseAll.addEventListener("click", function() {
+	if (!window.confirm("削除しますか???")) return;
+	ctx.rect(0, 0, canvas.width, canvas.height);
+	ctx.fillStyle = "white";
+	ctx.fill();
+});
+
 

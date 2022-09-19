@@ -69,12 +69,24 @@
 			grid-row-start: 2;
 			grid-row-end: 3;
 			display: flex;
+			justify-content: space-around;
 			#boldChanger {
 				display: block;
+				width: 80%;
 			}
 			#boldSampleBox {
+				width: 20%;
 				max-width: 50px;
 				aspect-ratio: 1 / 1;
+				border: 1px black solid;
+				background-color: lightgoldenrodyellow;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				#boldSample {
+					border-radius: 50%;
+					background-color: black;
+				}
 			}
 		}
 	}
