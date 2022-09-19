@@ -122,6 +122,7 @@ eraseAll.addEventListener("click", function() {
 	if (!window.confirm("削除しますか???")) return;
 	log.currentPosition = 0;
 	log.images.splice(0);
+	looper([undo, redo], item => item.classList.add("disabled"));
 	eraser();
 });
 
@@ -133,15 +134,28 @@ function eraser() {
 }
 
 undo.addEventListener("click", function() {
-	if (log.images.length < 1) {
+	if (log.currentPosition < 1) {
 		undo.classList.add("disabled");
 		return;
 	}
 	if (this.classList.contains("disabled")) return;
+	redo.classList.remove("disabled");
 	eraser();
 	log.currentPosition--;
 	const prevBlob = log.images[log.currentPosition - 1];
 	blobOnCanvas(prevBlob);
+});
+
+redo.addEventListener("click", function() {
+	if (this.classList.contains("disabled")) return;
+	if (log.images.length - 1 < log.currentPosition) {
+		redo.classList.add("disabled");
+		return;
+	}
+	eraser();
+	log.currentPosition++;
+	const nextBlob = log.images[log.currentPosition - 1];
+	blobOnCanvas(nextBlob);
 });
 
 
